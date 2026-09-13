@@ -10,11 +10,8 @@ class AIResponse(BaseModel):
     sentiment: str = Field(
         description="sentiment score from 0 (negative) to 100 (positive)"
     )
-    category: str = Field(
-        description="category of the inquiry (e.g., billing, technical, general)"
-    )
-    action: str = Field(
-        description="recommended action for the support representative"
+    response: str = Field(
+        description="suggested response to the user"
     )
 
 
