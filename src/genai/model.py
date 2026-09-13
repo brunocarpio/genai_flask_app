@@ -1,8 +1,7 @@
 from langchain_ibm import ChatWatsonx
-from langchain_core.prompts import PromptTemplate
+from langchain_core.prompts import ChatPromptTemplate
 from config import PARAMETERS, LLAMA_MODEL_ID, GRANITE_MODEL_ID, MISTRAL_MODEL_ID, CREDENTIALS
 from pydantic import BaseModel, Field
-from langchain_core.output_parsers import JsonOutputParser
 
 
 class AIResponse(BaseModel):
@@ -15,17 +14,15 @@ class AIResponse(BaseModel):
     )
 
 
-json_parser = JsonOutputParser(pydantic_object=AIResponse)
-
-
 def initialize_model(model_id):
-    return ChatWatsonx(
+    model = ChatWatsonx(
         model_id=model_id,
         url=CREDENTIALS["url"],
         project_id=CREDENTIALS["project_id"],
         api_key=CREDENTIALS["api_key"],
         params=PARAMETERS,
     )
+    return model.with_structured_output(AIResponse)
 
 
 llama_llm = initialize_model(LLAMA_MODEL_ID)
@@ -33,41 +30,29 @@ granite_llm = initialize_model(GRANITE_MODEL_ID)
 mistral_llm = initialize_model(MISTRAL_MODEL_ID)
 
 
-llama_template = PromptTemplate(
-    template='''<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-{system_prompt}\n{format_prompt}<|eot_id|><|start_header_id|>user<|end_header_id|>
-{user_prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>
-''',
-    input_variables=["system_prompt", "format_prompt", "user_prompt"]
-)
-
-granite_template = PromptTemplate(
-    template="System: {system_prompt}\n{format_prompt}\nHuman: {user_prompt}\nAI:",
-    input_variables=["system_prompt", "format_prompt", "user_prompt"]
-)
-
-mistral_template = PromptTemplate(
-    template="<s>[INST]{system_prompt}\n{format_prompt}\n{user_prompt}[/INST]",
-    input_variables=["system_prompt", "format_prompt", "user_prompt"]
+template = ChatPromptTemplate(
+    [
+        ("system", "{system_prompt}"),
+        ("human", "{user_prompt}"),
+    ]
 )
 
 
-def get_ai_response(model, template, system_prompt, user_prompt):
-    chain = template | model | json_parser
+def get_ai_response(model, system_prompt, user_prompt):
+    chain = template | model
     return chain.invoke({
-        'system_prompt': system_prompt,
-        'user_prompt': user_prompt,
-        'format_prompt': json_parser.get_format_instructions()
+        "system_prompt": system_prompt,
+        "user_prompt": user_prompt,
     })
 
 
 def llama_response(system_prompt, user_prompt):
-    return get_ai_response(llama_llm, llama_template, system_prompt, user_prompt)
+    return get_ai_response(llama_llm, system_prompt, user_prompt)
 
 
 def granite_response(system_prompt, user_prompt):
-    return get_ai_response(granite_llm, granite_template, system_prompt, user_prompt)
+    return get_ai_response(granite_llm, system_prompt, user_prompt)
 
 
 def mistral_response(system_prompt, user_prompt):
-    return get_ai_response(mistral_llm, mistral_template, system_prompt, user_prompt)
+    return get_ai_response(mistral_llm, system_prompt, user_prompt)
