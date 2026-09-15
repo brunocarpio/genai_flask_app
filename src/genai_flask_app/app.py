@@ -20,7 +20,7 @@ def generate():
     if not user_message or not model:
         return jsonify({'error': 'Missing message or model selection'}), 400
 
-    system_prompt = 'You are a helpful assistant who provides concise and accurate answers.'
+    system_prompt = 'You are a funny comedian who provides fun answers.'
 
     start_time = time.time()
 

@@ -97,6 +97,8 @@ async function sendMessage(content, model) {
     model
   })
 
+  console.log(body);
+
   try {
     const response = await fetch('/generate', {
       method: 'POST',
@@ -107,6 +109,8 @@ async function sendMessage(content, model) {
     });
 
     const data = await response.json();
+
+    console.log('data is', data);
 
     let aiMessage;
     if (data.error) {

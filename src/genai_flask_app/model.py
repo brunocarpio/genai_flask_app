@@ -46,10 +46,11 @@ template = ChatPromptTemplate(
 
 def get_ai_response(model, system_prompt, user_prompt):
     chain = template | model
-    return chain.invoke({
+    ai_response = chain.invoke({
         "system_prompt": system_prompt,
         "user_prompt": user_prompt,
     })
+    return vars(ai_response)
 
 
 def llama_response(system_prompt, user_prompt):
