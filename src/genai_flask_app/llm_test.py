@@ -1,4 +1,4 @@
-from model import llama_response, granite_response, mistral_response
+from model import granite_response, llama_response, mistral_response
 
 
 def call_all_models(system_prompt, user_prompt):

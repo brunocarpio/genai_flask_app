@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify, render_template
-from model import llama_response, granite_response, mistral_response
-
 import time
+
+from flask import Flask, jsonify, render_template, request
+from model import granite_response, llama_response, mistral_response
 
 app = Flask(__name__)
 

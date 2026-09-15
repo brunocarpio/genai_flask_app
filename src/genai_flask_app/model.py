@@ -1,6 +1,12 @@
-from langchain_ibm import ChatWatsonx
+from config import (
+    CREDENTIALS,
+    GRANITE_MODEL_ID,
+    LLAMA_MODEL_ID,
+    MISTRAL_MODEL_ID,
+    PARAMETERS,
+)
 from langchain_core.prompts import ChatPromptTemplate
-from config import PARAMETERS, LLAMA_MODEL_ID, GRANITE_MODEL_ID, MISTRAL_MODEL_ID, CREDENTIALS
+from langchain_ibm import ChatWatsonx
 from pydantic import BaseModel, Field
 
 

@@ -1,7 +1,7 @@
-from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
+import os
 
 from dotenv import load_dotenv
-import os
+from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
 
 load_dotenv()
 
