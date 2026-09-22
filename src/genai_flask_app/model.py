@@ -5,61 +5,59 @@ from config import (
     MISTRAL_MODEL_ID,
     PARAMETERS,
 )
-from langchain_core.prompts import ChatPromptTemplate
+from langchain.agents import create_agent
 from langchain_ibm import ChatWatsonx
-from pydantic import BaseModel, Field
+from langgraph.checkpoint.memory import InMemorySaver
 
 
-class AIResponse(BaseModel):
-    summary: str = Field(description="summary of the user's message")
-    sentiment: str = Field(
-        description="sentiment score from 0 (negative) to 100 (positive)"
-    )
-    response: str = Field(
-        description="suggested response to the user"
-    )
+class AppState:
+    system_prompt = ""
 
+    __llama_agent = None
+    __granite_agent = None
+    __mistral_agent = None
 
-def initialize_model(model_id):
-    model = ChatWatsonx(
-        model_id=model_id,
-        url=CREDENTIALS["url"],
-        project_id=CREDENTIALS["project_id"],
-        api_key=CREDENTIALS["api_key"],
-        params=PARAMETERS,
-    )
-    return model.with_structured_output(AIResponse)
+    def __init__(self, system_prompt):
+        if not system_prompt:
+            raise ValueError("system_prompt cannot be empty or null")
+        self.system_prompt = system_prompt
 
+    def __initialize_model(self, model_id):
+        model = ChatWatsonx(
+            model_id=model_id,
+            url=CREDENTIALS["url"],
+            project_id=CREDENTIALS["project_id"],
+            api_key=CREDENTIALS["api_key"],
+            params=PARAMETERS,
+        )
+        return model
 
-llama_llm = initialize_model(LLAMA_MODEL_ID)
-granite_llm = initialize_model(GRANITE_MODEL_ID)
-mistral_llm = initialize_model(MISTRAL_MODEL_ID)
+    def __initialize_agent(self, model_id):
+        model = self.__initialize_model(model_id)
+        agent = create_agent(
+            model=model, checkpointer=InMemorySaver(), system_prompt=self.system_prompt
+        )
+        return agent
 
+    def __get_ai_response(self, agent, user_prompt):
+        thread_config = {"configurable": {"thread_id": "1"}}
+        ai_response = agent.invoke(
+            {"messages": [{"role": "user", "content": user_prompt}]},
+            thread_config,
+        )
+        return ai_response["messages"][-1].content
 
-template = ChatPromptTemplate(
-    [
-        ("system", "{system_prompt}"),
-        ("human", "{user_prompt}"),
-    ]
-)
+    def llama_response(self, user_prompt):
+        if not self.__llama_agent:
+            self.__llama_agent = self.__initialize_agent(LLAMA_MODEL_ID)
+        return self.__get_ai_response(self.__llama_agent, user_prompt)
 
+    def granite_response(self, user_prompt):
+        if not self.__granite_agent:
+            self.__granite_agent = self.__initialize_agent(GRANITE_MODEL_ID)
+        return self.__get_ai_response(self.__granite_agent, user_prompt)
 
-def get_ai_response(model, system_prompt, user_prompt):
-    chain = template | model
-    ai_response = chain.invoke({
-        "system_prompt": system_prompt,
-        "user_prompt": user_prompt,
-    })
-    return vars(ai_response)
-
-
-def llama_response(system_prompt, user_prompt):
-    return get_ai_response(llama_llm, system_prompt, user_prompt)
-
-
-def granite_response(system_prompt, user_prompt):
-    return get_ai_response(granite_llm, system_prompt, user_prompt)
-
-
-def mistral_response(system_prompt, user_prompt):
-    return get_ai_response(mistral_llm, system_prompt, user_prompt)
+    def mistral_response(self, user_prompt):
+        if not self.__mistral_agent:
+            self.__mistral_agent = self.__initialize_agent(MISTRAL_MODEL_ID)
+        return self.__get_ai_response(self.__mistral_agent, user_prompt)
