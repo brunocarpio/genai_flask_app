@@ -1,4 +1,4 @@
-from config import (
+from genai_flask_app.config import (  # noqa: I001
     CREDENTIALS,
     GRANITE_MODEL_ID,
     LLAMA_MODEL_ID,
@@ -49,7 +49,9 @@ class AppState:
 
     def llama_response(self, user_prompt):
         if not self.__llama_agent:
+            print("setting up llama agent")
             self.__llama_agent = self.__initialize_agent(LLAMA_MODEL_ID)
+            print("finished setting up llama agent")
         return self.__get_ai_response(self.__llama_agent, user_prompt)
 
     def granite_response(self, user_prompt):
