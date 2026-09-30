@@ -19,6 +19,13 @@ class Agent(db.Model):
     name: Mapped[str] = mapped_column(nullable=False)
     system: Mapped[str] = mapped_column(nullable=False)
 
+    def __init__(self, name, system):
+        self.name = name
+        self.system = system
+
+    def __str__(self) -> str:
+        return f"Agent({self.id}, {self.name}, {self.system})"
+
 
 with app.app_context():
     db.create_all()
@@ -74,6 +81,7 @@ def delete_agent(id):
 @app.route("/chat_agent/<int:id>", methods=["GET"])
 def chat_agent(id):
     agent = Agent.query.get(id)
+    print(agent)
     return render_template("chat_agent.html", agent=agent, page_name="chat")
 
 

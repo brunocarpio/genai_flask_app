@@ -109,12 +109,13 @@
     </div>
   </div>
 </div>
+
 <script>
-  console.log('agent loaded', "{{agent.name}}")
-  window.agentName = '{{agent.name}}'
-  window.agentSystem = '{{agent.system}}'
-  window.agentId = '{{agent.id}}'
+  console.log("agent loaded", "{{agent.name}}")
+  window.agentName = "{{agent.name}}"
+  window.agentSystem = `{{agent.system}}`
+  window.agentId = "{{agent.id}}"
 </script>
 <script src="/static/script.js"></script>
 
-{% endblock %}
+{% endblock content %}
