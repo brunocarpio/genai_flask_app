@@ -17,12 +17,10 @@ class AppState:
     __granite_agent = None
     __mistral_agent = None
 
-    def __init__(self, system_prompt):
-        if not system_prompt:
-            raise ValueError("system_prompt cannot be empty or null")
+    def __init__(self, system_prompt: str):
         self.system_prompt = system_prompt
 
-    def __initialize_model(self, model_id):
+    def __initialize_model(self, model_id: str):
         model = ChatWatsonx(
             model_id=model_id,
             url=CREDENTIALS["url"],
@@ -32,7 +30,7 @@ class AppState:
         )
         return model
 
-    def __initialize_agent(self, model_id):
+    def __initialize_agent(self, model_id: str):
         model = self.__initialize_model(model_id)
         agent = create_agent(
             model=model, checkpointer=InMemorySaver(), system_prompt=self.system_prompt
@@ -63,3 +61,6 @@ class AppState:
         if not self.__mistral_agent:
             self.__mistral_agent = self.__initialize_agent(MISTRAL_MODEL_ID)
         return self.__get_ai_response(self.__mistral_agent, user_prompt)
+
+    def __str__(self) -> str:
+        return f"Agent(system_prompt={self.system_prompt})"
