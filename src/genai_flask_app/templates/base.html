@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock title %}</title>
+  {% if page_name != "chat" %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sakura.css/css/sakura.css" type="text/css">
+  <link rel="stylesheet" href="/static/index.css" type="text/css">
+  {% endif %}
+  {% block extra_styles %}{% endblock extra_styles %}
+</head>
+
+<body style="overflow: auto; height: 100%">
+
+  {% block content %}
+  {% endblock content %}
+
+</body>
+
+</html>

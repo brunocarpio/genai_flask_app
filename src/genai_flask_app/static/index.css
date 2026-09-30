@@ -1,0 +1,13 @@
+.w-70 {
+  max-width: 70px;
+}
+
+.w-150 {
+  max-width: 150px;
+}
+
+.truncated-cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

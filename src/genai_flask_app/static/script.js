@@ -15,10 +15,16 @@ const sendButton = document.getElementById('sendButton');
 const sendIcon = document.getElementById('sendIcon');
 const loadingSpinner = document.getElementById('loadingSpinner');
 
+const agentName = window.agentName;
+const agentSystem = window.agentSystem;
+const agentId = window.agentId;
+console.log("agent name in script", agentName)
+console.log("agent id in script", agentId)
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
   // Set default model
-  modelSelect.value = 'llama3';
+  modelSelect.value = 'granite';
 
   // Setup event listeners
   setupEventListeners();
@@ -100,7 +106,7 @@ async function sendMessage(content, model) {
   console.log(body);
 
   try {
-    const response = await fetch('/generate', {
+    const response = await fetch(`/generate/${agentId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
