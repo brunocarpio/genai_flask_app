@@ -26,6 +26,7 @@ CREDENTIALS = {
     "project_id": project_id,
 }
 
-LLAMA_MODEL_ID = "meta-llama/llama-3-3-70b-instruct"
+
+LLAMA_MODEL_ID = "meta-llama/llama-4-maverick-17b-128e-instruct-fp8"
 GRANITE_MODEL_ID = "ibm/granite-4-h-small"
 MISTRAL_MODEL_ID = "mistralai/mistral-small-3-1-24b-instruct-2503"
