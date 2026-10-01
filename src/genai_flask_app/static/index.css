@@ -1,3 +1,7 @@
+body {
+  max-width: 50em;
+}
+
 .w-70 {
   max-width: 70px;
 }
