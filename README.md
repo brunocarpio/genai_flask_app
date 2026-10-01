@@ -1,15 +1,35 @@
-## Basic Flask AI chat
+# GenAI Flask App
 
-- Flask application with AI capabilities.
+Simple Flask app that extends the hands-on activity in the Coursera course [develop-generative-ai-applications-get-started](https://www.coursera.org/learn/develop-generative-ai-applications-get-started/) by managing multiple agents configured by system prompts, allowing the user to select which agent to chat with.
 
-- Integrate and compare multiple language models (Llama, Granite, Mistral).
+## Features
+- Flask application with AI capabilities
+- CRUD operations on agents persisted in SQLite via SQLAlchemy
+- Integrate and compare multiple language models (e.g. Llama, Granite, Mistral)
+- Agents have memory through LangChain's checkpointers (thread-level persistance)
 
-- Implemented LangChain's JsonOutputParser for structured AI outputs.
+## Technologies used
+- Python (Flask, LangChain)
+- SQLite
+- Flask-SQLAlchemy
+- HTML, CSS, JS
 
-- Goal achieved: Gained insights into prompt engineering and model performance analysis.
+## Installation & setup
 
-- Agent short term memory
+- Activate the virtual environment
+```bash
+source ./.venv/bin/activate
+```
 
-### Setup
-- Install dependencies: uv sync
-- Run this project: uv run genai
+- Install the dependencies
+```bash
+uv sync
+```
+
+- Run the project (runs on port 5000)
+```bash
+uv run genai
+```
+
+- Open in Browser
+Open `http://127.0.0.1:5000/` in your browser
