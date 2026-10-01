@@ -19,3 +19,5 @@ call_all_models("What is the capital of Canada?")
 print("\n----------follow up questions----------\n")
 
 call_all_models("Tell me a fun fact about it")
+
+print(wmodel.get_chat_history())
