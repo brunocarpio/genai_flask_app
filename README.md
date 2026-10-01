@@ -16,6 +16,12 @@ Simple Flask app that extends the hands-on activity in the Coursera course [deve
 
 ## Installation & setup
 
+- Set up API keys
+```bash
+export WATSONX_API_KEY="your-api-key"
+export WATSONX_PROJECT_ID="your-project-id"
+```
+
 - Activate the virtual environment
 ```bash
 source ./.venv/bin/activate
