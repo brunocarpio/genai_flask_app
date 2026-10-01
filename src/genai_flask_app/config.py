@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
+from ibm_watsonx_ai.foundation_models.schema import TextChatParameters
 
 load_dotenv()
 
@@ -15,10 +15,9 @@ if not project_id:
     raise ValueError("critical error: WATSONX_PROJECT_ID missing or empty")
 
 
-PARAMETERS = {
-    GenParams.DECODING_METHOD: "greedy",
-    GenParams.MAX_NEW_TOKENS: 128,
-}
+PARAMETERS = TextChatParameters(
+    max_completion_tokens=1024, reasoning_effort="medium", temperature=0.3, n=1
+)
 
 CREDENTIALS = {
     "url": "https://us-south.ml.cloud.ibm.com",
