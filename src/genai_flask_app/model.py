@@ -1,26 +1,33 @@
-from genai_flask_app.config import (  # noqa: I001
+from langchain.agents import create_agent
+from langchain_ibm import ChatWatsonx
+from langgraph.checkpoint.memory import InMemorySaver
+from langgraph.graph.state import CompiledStateGraph, RunnableConfig
+
+from genai_flask_app.config import (
     CREDENTIALS,
     GRANITE_MODEL_ID,
     LLAMA_MODEL_ID,
     MISTRAL_MODEL_ID,
     PARAMETERS,
 )
-from langchain.agents import create_agent
-from langchain_ibm import ChatWatsonx
-from langgraph.checkpoint.memory import InMemorySaver
 
 
-class AppState:
-    system_prompt = ""
+class WModel:
+    def __init__(self):
+        self._system = ""
+        self._llama_agent = None
+        self._granite_agent = None
+        self._mistral_agent = None
 
-    __llama_agent = None
-    __granite_agent = None
-    __mistral_agent = None
+    @property
+    def system(self):
+        return self._system
 
-    def __init__(self, system_prompt: str):
-        self.system_prompt = system_prompt
+    @system.setter
+    def system(self, system):
+        self._system = system
 
-    def __initialize_model(self, model_id: str):
+    def __initialize_agent(self, model_id: str) -> CompiledStateGraph:
         model = ChatWatsonx(
             model_id=model_id,
             url=CREDENTIALS["url"],
@@ -28,39 +35,43 @@ class AppState:
             api_key=CREDENTIALS["api_key"],
             params=PARAMETERS,
         )
-        return model
-
-    def __initialize_agent(self, model_id: str):
-        model = self.__initialize_model(model_id)
         agent = create_agent(
-            model=model, checkpointer=InMemorySaver(), system_prompt=self.system_prompt
+            model=model, checkpointer=InMemorySaver(), system_prompt=self._system
         )
         return agent
 
-    def __get_ai_response(self, agent, user_prompt):
-        thread_config = {"configurable": {"thread_id": "1"}}
-        ai_response = agent.invoke(
-            {"messages": [{"role": "user", "content": user_prompt}]},
-            thread_config,
-        )
-        return ai_response["messages"][-1].content
+    def __get_ai_response(self, agent: CompiledStateGraph, prompt: str) -> str:
+        thread_config = RunnableConfig(configurable={"thread_id": "1"})
+        try:
+            ai_response = agent.invoke(
+                input={"messages": [{"role": "user", "content": prompt}]},
+                config=thread_config,
+            )
+            return ai_response["messages"][-1].content
+        except Exception as e:
+            error_text = str(e)
+            return f"Caught error text: {error_text}"
 
     def llama_response(self, user_prompt):
-        if not self.__llama_agent:
+        if not self._llama_agent:
             print("setting up llama agent")
-            self.__llama_agent = self.__initialize_agent(LLAMA_MODEL_ID)
+            self._llama_agent = self.__initialize_agent(LLAMA_MODEL_ID)
             print("finished setting up llama agent")
-        return self.__get_ai_response(self.__llama_agent, user_prompt)
+        return self.__get_ai_response(self._llama_agent, user_prompt)
 
-    def granite_response(self, user_prompt):
-        if not self.__granite_agent:
-            self.__granite_agent = self.__initialize_agent(GRANITE_MODEL_ID)
-        return self.__get_ai_response(self.__granite_agent, user_prompt)
+    def granite_response(self, prompt):
+        if not self._granite_agent:
+            print("setting up granite agent")
+            self._granite_agent = self.__initialize_agent(GRANITE_MODEL_ID)
+            print("finished setting up granite agent")
+        return self.__get_ai_response(self._granite_agent, prompt)
 
     def mistral_response(self, user_prompt):
-        if not self.__mistral_agent:
-            self.__mistral_agent = self.__initialize_agent(MISTRAL_MODEL_ID)
-        return self.__get_ai_response(self.__mistral_agent, user_prompt)
+        if not self._mistral_agent:
+            print("setting up mistral agent")
+            self._mistral_agent = self.__initialize_agent(MISTRAL_MODEL_ID)
+            print("finished setting up mistral agent")
+        return self.__get_ai_response(self._mistral_agent, user_prompt)
 
     def __str__(self) -> str:
-        return f"Agent(system_prompt={self.system_prompt})"
+        return f"WModel(system={self._system})"
