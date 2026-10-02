@@ -1,5 +1,5 @@
-import json
 from datetime import datetime
+from typing import Any
 
 from langchain.agents import create_agent
 from langchain_core.messages import message_to_dict
@@ -100,7 +100,7 @@ class WModel:
             print("finished setting up mistral agent")
         return self.__get_ai_response(self._mistral_agent, user_prompt)
 
-    def get_chat_history(self) -> str:
+    def get_chat_history(self) -> list[dict[str, Any]]:
         active_agent = None
 
         if self._granite_agent:
@@ -110,15 +110,14 @@ class WModel:
         elif self._llama_agent:
             active_agent = self._llama_agent
         if not active_agent:
-            raise ValueError("get_chat_history no agent is set up")
+            return []
 
         messages = active_agent.get_state(self._thread_config).values.get(
             "messages", []
         )
         messages_dict = [message_to_dict(message) for message in messages]
 
-        messages_json = json.dumps(messages_dict)
-        return messages_json
+        return messages_dict
 
     def __str__(self) -> str:
         return f"WModel(system={self._system})"
