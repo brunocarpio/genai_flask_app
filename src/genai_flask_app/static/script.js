@@ -1,5 +1,5 @@
 // Application State
-let messages = [];
+let messages = window.chat_history
 let isLoading = false;
 
 // DOM Elements
@@ -18,8 +18,9 @@ const loadingSpinner = document.getElementById('loadingSpinner');
 const agentName = window.agentName;
 const agentSystem = window.agentSystem;
 const agentId = window.agentId;
-console.log("agent name in script", agentName)
-console.log("agent id in script", agentId)
+
+console.log("agentId", agentId)
+console.log("agentName", agentName)
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
@@ -31,7 +32,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initial state
   updateSendButton();
+
+  displayChatHistory();
 });
+
+function displayChatHistory() {
+  for (const message of messages) {
+    model_name = message.type === "ai" ? message.data?.response_metadata?.model_name : ""
+    model = ""
+
+    if (model_name && model_name.includes("ibm")) {
+      model = "granite"
+    } else if (model_name && model_name.includes("llama")) {
+      model = "llama"
+    } else if (model_name && model_name.includes("mistral")) {
+      model = "mistral"
+    }
+
+    const chatMessage = {
+      id: message.data?.id,
+      content: message.data?.content,
+      type: message.type === "ai" ? "ai" : "user",
+      model,
+      timestamp: new Date(message.data?.additional_kwargs?.timestamp),
+    }
+    displayMessage(chatMessage)
+  }
+}
 
 function setupEventListeners() {
   // Form submission
@@ -103,8 +130,6 @@ async function sendMessage(content, model) {
     model
   })
 
-  console.log(body);
-
   try {
     const response = await fetch(`/generate/${agentId}`, {
       method: 'POST',
@@ -116,7 +141,7 @@ async function sendMessage(content, model) {
 
     const data = await response.json();
 
-    console.log('data is', data);
+    console.log("data", data)
 
     let aiMessage;
     if (data.error) {
@@ -130,7 +155,7 @@ async function sendMessage(content, model) {
     } else {
       aiMessage = {
         id: (Date.now() + 1).toString(),
-        content: data.response,
+        content: data.content,
         type: 'ai',
         model: model,
         duration: data.duration,
@@ -174,8 +199,11 @@ function displayMessage(message) {
   const modelBadge = message.model ?
     `<span class="message-model">${message.model}</span>` : '';
 
-  const duration = message.duration ?
-    `<span>${message.duration.toFixed(2)}s</span>` : '';
+  let duration = "";
+  if (message.duration && typeof message.duration === "number") {
+    const durationMili = message.duration.toFixed(3);
+    duration = `<span>${durationMili}s</span>`;
+  }
 
   messageEl.innerHTML = `
         <div class="message-wrapper">

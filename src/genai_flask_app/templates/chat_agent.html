@@ -111,10 +111,14 @@
 </div>
 
 <script>
-  console.log("agent loaded", "{{agent.name}}")
-  window.agentName = "{{agent.name}}"
+  console.log("agent loaded", `{{agent.name}}`)
+
+  window.agentName = `{{agent.name}}`
   window.agentSystem = `{{agent.system}}`
-  window.agentId = "{{agent.id}}"
+  window.agentId = `{{agent.id}}`
+
+  window.chat_history = {{chat_history|tojson}}
+  console.log(chat_history)
 </script>
 <script src="/static/script.js"></script>
 
