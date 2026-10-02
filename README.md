@@ -6,7 +6,9 @@ Simple Flask app that extends the hands-on activity in the Coursera course [deve
 - Flask application with AI capabilities
 - CRUD operations on agents persisted in SQLite via SQLAlchemy
 - Integrate and compare multiple language models (e.g. Llama, Granite, Mistral)
-- Agents have memory through LangChain's checkpointers (thread-level persistance)
+- Agents have memory through LangChain's checkpointers (thread-level persistence)
+- Agents within the same chat share the same memory graph
+- Agents return structured output registered in custom serializer
 
 ## Technologies used
 - Python (Flask, LangChain)
