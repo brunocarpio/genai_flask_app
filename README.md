@@ -8,7 +8,7 @@ Simple Flask app that extends the hands-on activity in the Coursera course [deve
 - Integrate and compare multiple language models (e.g. Llama, Granite, Mistral)
 - Agents have memory through LangChain's checkpointers (thread-level persistence)
 - Agents within the same chat share the same memory graph
-- Agents return structured output registered in custom serializer
+- Agents use additional kwargs for storing human and AI timestamps
 
 ## Technologies used
 - Python (Flask, LangChain)

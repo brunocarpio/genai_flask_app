@@ -2,13 +2,13 @@ from genai_flask_app.model import WModel
 
 
 def call_all_models(user_prompt):
-    # llama_result = wmodel.llama_response(user_prompt)
+    llama_result = wmodel.llama_response(user_prompt)
     granite_result = wmodel.granite_response(user_prompt)
-    # mistral_result = wmodel.mistral_response(user_prompt)
+    mistral_result = wmodel.mistral_response(user_prompt)
 
-    # print("llama response:\n", llama_result)
+    print("llama response:\n", llama_result)
     print("\ngranite response:\n", granite_result)
-    # print("\nmistral response:\n", mistral_result)
+    print("\nmistral response:\n", mistral_result)
 
 
 wmodel = WModel()
